@@ -1,15 +1,7 @@
-const { Pool } = require("pg")
-
-const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "bancosolar",
-  password: "alejandra",
-  port: 5432,
-})
+const cliente = require("./cliente")
 
 const editUsuario = async (datos, id) => {
-  pool.connect(async (_errorConexion, client, release) => {
+  try {
     const consulta = {
       text: `UPDATE usuarios SET
         nombre = $1,
@@ -17,15 +9,12 @@ const editUsuario = async (datos, id) => {
         WHERE id = $3 RETURNING *`,
       values: [...datos, id],
     }
-    try {
-      const result = await client.query(consulta)
-      return result
-    } catch (error) {
-      console.log(error.code)
-    }
-    release()
-    pool.end()
-  })
+    const client = await cliente()
+    const result = await client.query(consulta)
+    return result
+  } catch (error) {
+    console.log(error.code)
+  }
 }
 
 module.exports = editUsuario

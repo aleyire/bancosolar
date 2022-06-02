@@ -6,11 +6,8 @@ const eliminarUsuario = require("./consultas/getUsuarios")
 const guardarUsuario = require("./consultas/getUsuarios")
 const editUsuario = require("./consultas/getUsuarios")
 const { regTransferencias, getTransferencias } = require("./transferencias")
-// const conexion = require("./conexion")
 
 const main = async () => {
-  //const client = await conexion()
-  //try {
   const server = http.createServer(async (req, res) => {
     if (req.url == "/" && req.method === "GET") {
       res.setHeader("Content-Type", "text/html")
@@ -83,8 +80,5 @@ const main = async () => {
     }
   })
   server.listen(3000, console.log("server on"))
-  //} catch (error) {
-  // console.log(error)
-  //
 }
 main()
