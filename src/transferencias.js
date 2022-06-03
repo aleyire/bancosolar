@@ -1,26 +1,28 @@
 const cliente = require("./consultas/cliente")
 
-const regTransferencias = async (id, balance, id2, balance2, emisor, receptor, monto, fecha) => {
+const registrarTransferencias = async (t) => {
+
+  const client = await cliente()
   try {
     await client.query("BEGIN")
     const descontar = {
       name: "descontar",
-      text: "UPDATE usuarios SET balance = balance - $2 WHERE id = $1 RETURNING *",
-      values: [id, balance],
+      text: "UPDATE usuarios SET balance = balance - $1 WHERE id = $2 RETURNING *",
+      values: [t.monto, t.emisor],
     }
-    const client = await cliente()
     const descuento = await client.query(descontar)
     const acreditar = {
       name: "acreditar",
-      text: "UPDATE usuarios SET balance = balance + $2 WHERE id = $1 RETURNING *",
-      values: [id2, balance2],
+      text: "UPDATE usuarios SET balance = balance + $1 WHERE id = $2 RETURNING *",
+      values: [t.monto, t.receptor],
     }
     
+ 
     const acreditacion = await client.query(acreditar)
     const transacciones = {
-      name: "transacciones",
-      text: "INSERT INTO tranferencias (emisor, receptor, monto, fecha) VALUES ($1, $2, $3, $4) RETURNING *",
-      values: [emisor, receptor, monto, fecha],
+      name: "transacciones", // el emisor y receptor hay que referenciarlos con el id
+      text: "INSERT INTO transferencias (emisor, receptor, monto, fecha) VALUES ($1, $2, $3, now()) RETURNING *",
+      values: [t.emisor, t.receptor, t.monto],
     }
     const transaccion = await client.query(transacciones)
     console.log("Descuento realizado con éxito: ", descuento.rows[0])
@@ -28,22 +30,26 @@ const regTransferencias = async (id, balance, id2, balance2, emisor, receptor, m
     console.log("Transacción ingresada con éxito: ", transaccion.rows[0])
 
     await client.query("COMMIT")
+    return transaccion.rows[0]
   } catch (error) {
-    await client.query("ROLLBACK")
+    await client.query("ROLLBACK") 
     console.log("Error: ", error)
+    throw error
   }
 }
 
 const getTransferencias = async () => {
   // imprimir las transferencias
+  const client = await cliente()
   try {
     const consulta = {
-      text: "SELECT * FROM transferencias",
+      text: "SELECT * FROM transferencias INNER JOIN usuarios ON transferencias.emisor = usuarios.id INNER JOIN usuarios AS usuarios_2 ON transferencias.receptor = usuarios_2.id",
       rowMode: "array",
-      values,
+      values: [],
     }
-    const client = await cliente()
+    
     const result = await client.query(consulta)
+    console.log(result.rows)
     return result.rows
   } catch (error) {
     console.log(error.code)
@@ -51,4 +57,4 @@ const getTransferencias = async () => {
   }
 }
 
-module.exports = { regTransferencias, getTransferencias }
+module.exports = { registrarTransferencias, getTransferencias }
