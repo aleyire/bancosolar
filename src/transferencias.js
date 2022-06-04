@@ -16,8 +16,6 @@ const registrarTransferencias = async (t) => {
       text: "UPDATE usuarios SET balance = balance + $1 WHERE id = $2 RETURNING *",
       values: [t.monto, t.receptor],
     }
-    
- 
     const acreditacion = await client.query(acreditar)
     const transacciones = {
       name: "transacciones", // el emisor y receptor hay que referenciarlos con el id
@@ -28,7 +26,7 @@ const registrarTransferencias = async (t) => {
     console.log("Descuento realizado con éxito: ", descuento.rows[0])
     console.log("Acreditación realizada con éxito: ", acreditacion.rows[0])
     console.log("Transacción ingresada con éxito: ", transaccion.rows[0])
-
+    
     await client.query("COMMIT")
     return transaccion.rows[0]
   } catch (error) {
