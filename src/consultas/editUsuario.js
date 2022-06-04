@@ -1,6 +1,6 @@
 const cliente = require("./cliente")
 
-const editUsuario = async (client, datos, id) => {
+const editUsuario = async (datos, id) => {
   const client = await cliente()
   try {
     const consulta = {
@@ -11,9 +11,11 @@ const editUsuario = async (client, datos, id) => {
       values: [...datos, id],
     }    
     const result = await client.query(consulta)
+    console.log(result)
     return result
   } catch (error) {
     console.log(error.code)
+    return error
   }
 }
 

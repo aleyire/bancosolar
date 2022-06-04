@@ -2,9 +2,9 @@ const http = require("http")
 const fs = require("fs")
 const url = require("url")
 const getUsuarios = require("./consultas/getUsuarios")
-const eliminarUsuario = require("./consultas/getUsuarios")
-const guardarUsuario = require("./consultas/getUsuarios")
-const editUsuario = require("./consultas/getUsuarios")
+const eliminarUsuario = require("./consultas/eliminarUsuario")
+const guardarUsuario = require("./consultas/guardarUsuario")
+const editUsuario = require("./consultas/editUsuario")
 const { registrarTransferencias, getTransferencias } = require("./transferencias")
 
 http
@@ -22,51 +22,45 @@ http
       })
     }
 
-    if (req.url == "/usuarios" && req.method === "GET") {
-      const usuarios = await getUsuarios()
-      res.writeHead(201, { "Content-Type": "application/json" })
-      res.end(JSON.stringify(usuarios))
-    }
-
-    if (req.url.startsWith("/usuario?") && req.method === "DELETE") {
-      console.log('(req.url.startsWith("/usuario?") && req.method === "DELETE")')
-      const { id } = url.parse(req.url, true).query
-      const response = await eliminarUsuario(id)
-      res.writeHead(200, { "Content-Type": "application/json" })
-      res.end(JSON.stringify(response))
-    }
-
-
     if (req.url == "/usuario" && req.method === "POST") {
-      console.log('(req.url == "/usuario" && req.method === "POST")')
       let body = ""
       req.on("data", (chunk) => {
         body = chunk.toString()
       })
       req.on("end", async () => {
         const datos = Object.values(JSON.parse(body))
-        const respuesta = await guardarUsuario(datos)
+        const result = await guardarUsuario(datos)
         res.writeHead(200, { "Content-Type": "application/json" })
-        res.end(JSON.stringify(respuesta))
+        res.end(JSON.stringify(result))
       })
     }
 
+    if (req.url == "/usuarios" && req.method === "GET") {
+      const usuarios = await getUsuarios()
+      res.writeHead(201, { "Content-Type": "application/json" })
+      res.end(JSON.stringify(usuarios))
+    }
+
     if (req.url.startsWith("/usuario?") && req.method === "PUT") {
-      console.log('req.url.startsWith("/usuario?") && req.method === "PUT")')
       const { id } = url.parse(req.url, true).query
       let body = ""
       req.on("data", (chunk) => {
         body = chunk.toString()
       })
       req.on("end", async () => {
-        const datos = JSON.parse(body)
+        const datos = Object.values(JSON.parse(body))
         const respuesta = await editUsuario(datos, id)
         res.end(JSON.stringify(respuesta))
       })
     }
 
+    if (req.url.startsWith("/usuario?") && req.method === "DELETE") {
+      let { id } = url.parse(req.url, true).query
+      await eliminarUsuario(id)
+      res.end("usuario eliminado")
+    }
+
     if (req.url == "/transferencia" && req.method === "POST") {
-      console.log('(req.url == "/transferencia" && req.method === "POST")')
       // ruta para registrar transferencias
       let body = ""
       req.on("data", (chunk) => {
@@ -81,7 +75,6 @@ http
     }
 
     if (req.url == "/transferencias" && req.method === "GET") {
-      console.log('(req.url == "/transferencias" && req.method === "GET")')
       // ruta para mostrar las transferencias
       const consulta = await getTransferencias()
       res.writeHead(201, { "Content-Type": "application/json" })

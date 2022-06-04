@@ -3,14 +3,12 @@ const cliente = require("./cliente")
 
 const guardarUsuario = async (datos) => {
   const client = await cliente()
-  console.log('guardarUsuario')
+  const values = Object.values(datos)
   try {
-    const values = Object.values(datos)
     const consulta = {
       text: "INSERT INTO usuarios (nombre, balance) values ($1, $2)",
-      values,
+      values
     }
-    
     const result = await client.query(consulta)
     return result
   } catch (error) {

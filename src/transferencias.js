@@ -43,7 +43,7 @@ const getTransferencias = async () => {
   const client = await cliente()
   try {
     const consulta = {
-      text: "SELECT * FROM transferencias INNER JOIN usuarios ON transferencias.emisor = usuarios.id INNER JOIN usuarios AS usuarios_2 ON transferencias.receptor = usuarios_2.id",
+      text: "SELECT t.fecha, u.nombre AS emisor, u_2.nombre AS receptor, t.monto FROM transferencias t INNER JOIN usuarios u ON t.emisor = u.id INNER JOIN usuarios AS u_2 ON t.receptor = u_2.id",
       rowMode: "array",
       values: [],
     }
