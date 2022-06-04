@@ -13,7 +13,7 @@ Esta aplicación esta en desarrollo.
 
 ### Visualización
 
-![]()
+![](https://github.com/aleyire/bancosolar/blob/main/src/img/preview1.png)
 
 
-![]()
+![](https://github.com/aleyire/bancosolar/blob/main/src/img/preview2.png)
