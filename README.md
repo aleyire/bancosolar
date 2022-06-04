@@ -10,3 +10,10 @@ Esta aplicación esta en desarrollo.
 - Construir una API RESTful utilizando PostgreSQL para la persistencia de datos.
 - Manejar errores.
 - Manejar códigos de estado HTTP
+
+### Visualización
+
+![]()
+
+
+![]()
